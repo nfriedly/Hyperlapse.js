@@ -11,7 +11,16 @@
 
 		function init() {
       var statusEl = document.getElementById('status');
-      statusEl.innerText = 'Loading.'
+
+      function setStatus(text) {
+        statusEl.innerText = statusEl.textContent = text;
+      }
+
+      function addDot(e) {
+        statusEl.textContent = statusEl.innerText += '.';
+      };
+
+      setStatus('Loading.');
 
 			var hyperlapse = new Hyperlapse(document.getElementById('pano'), {
         //lookat: new google.maps.LatLng(39.956567,-84.181361),
@@ -29,15 +38,12 @@
 				hyperlapse.load();
 			};
 
-      function addDot(e) {
-        statusEl.innerText += '.';
-      };
 
       hyperlapse.onLoadProgress = addDot;
       hyperlapse.onRouteProgress = addDot;
 
 			hyperlapse.onLoadComplete = function(e) {
-        statusEl.innerText = 'Loaded!'
+        setStatus('Loaded!');
 				hyperlapse.play();
 			};
 
@@ -57,6 +63,7 @@
 					hyperlapse.generate( {route:response} );
 				} else {
 					console.log(status);
+          setStatus('Error');
 				}
 			});
 
