@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Nathan's Neighborhood</title>
+
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
+	<script src="js/three.min.js"></script>
+	<script src="js/GSVPano.js"></script>
+	<script src="../src/Hyperlapse.js"></script>
+	<script>
+
+		function init() {
+      var statusEl = document.getElementById('status');
+      statusEl.innerText = 'Loading.'
+
+			var hyperlapse = new Hyperlapse(document.getElementById('pano'), {
+        //lookat: new google.maps.LatLng(39.956567,-84.181361),
+        //zoom: 1,
+        //use_lookat: true,
+        //elevation: 50
+			});
+
+			hyperlapse.onError = function(e) {
+				console.log(e);
+        statusEl.innerText = 'Error'
+			};
+
+			hyperlapse.onRouteComplete = function(e) {
+				hyperlapse.load();
+			};
+
+      function addDot(e) {
+        statusEl.innerText += '.';
+      };
+
+      hyperlapse.onLoadProgress = addDot;
+      hyperlapse.onRouteProgress = addDot;
+
+			hyperlapse.onLoadComplete = function(e) {
+        statusEl.innerText = 'Loaded!'
+				hyperlapse.play();
+			};
+
+			// Google Maps API stuff here...
+			var directions_service = new google.maps.DirectionsService();
+
+			var route = {
+				request:{
+					origin: new google.maps.LatLng(39.956134,-84.181530,37),
+          destination: new google.maps.LatLng(39.952875, -84.184472), // 39.956872,-84.182187),
+					travelMode: google.maps.DirectionsTravelMode.DRIVING
+				}
+			};
+
+			directions_service.route(route.request, function(response, status) {
+				if (status == google.maps.DirectionsStatus.OK) {
+					hyperlapse.generate( {route:response} );
+				} else {
+					console.log(status);
+				}
+			});
+
+		}
+
+		window.onload = init;
+
+	</script>
+</head>
+<body>
+  <p id="status"></p>
+	<div id="pano"></div>
+</body>
+</html>
